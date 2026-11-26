@@ -1,0 +1,6 @@
+# Raw client data must NOT be published (Kestrel ops policy section 10)
+data/*
+!data/README.md
+.venv/
+__pycache__/
+*.pyc

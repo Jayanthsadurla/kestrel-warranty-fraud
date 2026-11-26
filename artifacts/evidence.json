@@ -1,0 +1,128 @@
+{
+  "validation_window": "June 2026 (model trained on claims before 1 June 2026)",
+  "n_claims": 713,
+  "n_fraud": 22,
+  "fraud_rate": 0.030855539971949508,
+  "pr_auc": 0.3932525401261555,
+  "pr_auc_ci90": [
+    0.24672462397656525,
+    0.5624631237157105
+  ],
+  "roc_auc": 0.913235100644652,
+  "capacity_k": 38,
+  "caught_in_top_k": 15,
+  "recall_at_k": 0.6818181818181818,
+  "recall_at_k_ci90": [
+    0.47619047619047616,
+    0.8181818181818182
+  ],
+  "precision_at_k": 0.39473684210526316,
+  "fraud_rupees_stopped": 20920.0,
+  "fraud_rupees_total": 45673.0,
+  "genuine_held": 23,
+  "goodwill_cost": 8740,
+  "review_cost": 9880,
+  "net_rupees": 2300.0,
+  "net_rupees_before_review_cost": 12180.0,
+  "accuracy_at_capacity_threshold": 0.9579242636746143,
+  "accuracy_flag_nothing": 0.9691444600280504,
+  "best_accuracy": 0.9719495091164095,
+  "best_accuracy_threshold": 0.5033903757302559,
+  "flagged_at_best_accuracy": 4,
+  "threshold": 0.08347341779693973,
+  "missed": [
+    {
+      "claim_id": "WC710711",
+      "partner_id": "SP3121",
+      "onboarded_date": "2021-10-08",
+      "claim_amount_inr": "686.0",
+      "partner_inspected": "N"
+    },
+    {
+      "claim_id": "WC711116",
+      "partner_id": "SP3118",
+      "onboarded_date": "2026-06-03",
+      "claim_amount_inr": "1406.0",
+      "partner_inspected": "N"
+    },
+    {
+      "claim_id": "WC711200",
+      "partner_id": "SP3160",
+      "onboarded_date": "2025-12-27",
+      "claim_amount_inr": "959.0",
+      "partner_inspected": "N"
+    },
+    {
+      "claim_id": "WC711249",
+      "partner_id": "SP3286",
+      "onboarded_date": "2026-06-04",
+      "claim_amount_inr": "999.0",
+      "partner_inspected": "N"
+    },
+    {
+      "claim_id": "WC711262",
+      "partner_id": "SP3275",
+      "onboarded_date": "2022-02-19",
+      "claim_amount_inr": "17866.0",
+      "partner_inspected": "Y"
+    },
+    {
+      "claim_id": "WC711271",
+      "partner_id": "SP3286",
+      "onboarded_date": "2026-06-04",
+      "claim_amount_inr": "1191.0",
+      "partner_inspected": "N"
+    },
+    {
+      "claim_id": "WC711279",
+      "partner_id": "SP3118",
+      "onboarded_date": "2026-06-03",
+      "claim_amount_inr": "1646.0",
+      "partner_inspected": "N"
+    }
+  ],
+  "old_regime_model_on_mayjun_roc_auc": 0.2154882154882155,
+  "rule_new_partner_small_uninspected": {
+    "flagged": 86,
+    "caught": 20
+  },
+  "rule_small_uninspected": {
+    "flagged": 548,
+    "caught": 21
+  },
+  "facts": {
+    "raw_rows": 12029,
+    "duplicate_rows_removed": 681,
+    "undecided_dropped": 202,
+    "labelled_claims": 11146,
+    "fraud_total": 141,
+    "fraud_rate": 0.012650278126682218,
+    "fraud_rate_new_partners": 0.07068607068607069,
+    "fraud_rate_old_partners": 0.010032817627754336,
+    "new_partners_with_claims": 46,
+    "new_partners_with_any_fraud": 8,
+    "old_partner_fraud_rate_after_may": 0.0016515276630883566,
+    "new_partner_small_after_may": {
+      "n": 161,
+      "fraud": 34
+    },
+    "top10_partners_share_of_fraud": 0.6312056737588653,
+    "partners_with_fraud": 51,
+    "fraud_rate_before_may": 0.010798025503907857,
+    "fraud_rate_after_may": 0.02531645569620253,
+    "mean_fraud_amount_before_may": 5432.714285714285,
+    "mean_fraud_amount_after_may": 1864.5277777777778
+  },
+  "test": {
+    "rows": 2252,
+    "mean_score": 0.029534384868948327,
+    "flagged_at_threshold": 180,
+    "flagged_share": 0.07992895204262877,
+    "flagged_per_month": 60.0,
+    "expected_frauds_sum_of_scores": 66.51143472487163,
+    "share_from_new_partners": 0.1771758436944938,
+    "top120_new_partner_share": 1.0,
+    "deploy_threshold": 0.14093759067707387,
+    "flagged_at_deploy_threshold": 120
+  }
+}

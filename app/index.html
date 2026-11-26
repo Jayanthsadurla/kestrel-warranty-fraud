@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kestrel claim check</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c2430;--mute:#5b6675;--line:#dfe3ea;--red:#b42318;--redbg:#fef3f2;--grn:#067647;--grnbg:#ecfdf3;--amb:#b54708;--ambbg:#fffaeb;--acc:#1d4ed8}
+@media (prefers-color-scheme:dark){:root{--bg:#10141a;--card:#18202a;--ink:#e8edf4;--mute:#9aa6b6;--line:#2a3544;--redbg:#3a1815;--red:#fda29b;--grnbg:#0e2a1c;--grn:#75e0a7;--ambbg:#33260d;--amb:#fec84b;--acc:#7aa2ff}}
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+main{max-width:880px;margin:0 auto;padding:20px 16px 48px}h1{font-size:1.4rem;margin:.2rem 0}p.sub{color:var(--mute);margin:.2rem 0 1rem}
+.grid{display:grid;gap:16px;grid-template-columns:1fr}@media(min-width:760px){.grid{grid-template-columns:1fr 1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+label{display:block;font-size:.85rem;color:var(--mute);margin:10px 0 3px}input,select{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}button{padding:10px 14px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;cursor:pointer}
+button.go{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:600;width:100%;margin-top:14px}.ex{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.pill{display:inline-block;padding:4px 12px;border-radius:99px;font-weight:700}.high{background:var(--redbg);color:var(--red)}.low{background:var(--grnbg);color:var(--grn)}.medium{background:var(--ambbg);color:var(--amb)}
+ul{padding-left:1.1rem;margin:.4rem 0}li{margin:.35rem 0}.big{font-size:2rem;font-weight:700}.mute{color:var(--mute);font-size:.9rem}.err{color:var(--red)}
+</style></head><body><main>
+<h1>Kestrel claim check</h1>
+<p class="sub">Type in one warranty claim. The tool says whether to hold it for the investigation desk, and why.</p>
+<div class="grid">
+<div class="card"><div class="ex"><button type="button" data-ex="a">Example: normal claim</button><button type="button" data-ex="b">Example: new partner, small claim</button></div>
+<form id="f">
+<div class="row"><div><label>Partner ID</label><input id="partner_id" value="SP3004" required></div><div><label>Product code</label><input id="sku" value="KH-AF-02" required></div></div>
+<div class="row"><div><label>Claim amount (Rs)</label><input id="claim_amount_inr" type="number" min="0" step="1" value="3200" required></div><div><label>Days since purchase</label><input id="days_since_purchase" type="number" min="0" value="120" required></div></div>
+<div class="row"><div><label>Inspected by partner?</label><select id="partner_inspected"><option>Y</option><option>N</option></select></div><div><label>Photo attached?</label><select id="photo_attached"><option>Y</option><option>N</option></select></div></div>
+<div class="row"><div><label>Customer's earlier claims</label><input id="customer_prior_claims" type="number" min="0" value="0"></div><div><label>Claim date (optional)</label><input id="submitted_at" placeholder="2026-07-14 10:30"></div></div>
+<button class="go" type="submit">Check this claim</button></form></div>
+<div class="card" id="out" aria-live="polite"><p class="mute">The result appears here.</p></div></div>
+<script>
+const $=id=>document.getElementById(id);
+const EX={a:{partner_id:"SP3004",sku:"KH-AF-02",claim_amount_inr:3200,days_since_purchase:120,partner_inspected:"Y",photo_attached:"Y",customer_prior_claims:0,submitted_at:"2026-07-14 10:30"},
+b:{partner_id:"SP3287",sku:"KH-IC-02",claim_amount_inr:1450,days_since_purchase:200,partner_inspected:"N",photo_attached:"N",customer_prior_claims:2,submitted_at:"2026-08-20 15:10"}};
+document.querySelectorAll("[data-ex]").forEach(b=>b.onclick=()=>{for(const[k,v]of Object.entries(EX[b.dataset.ex]))$(k).value=v});
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const list=(t,a)=>a&&a.length?`<h3>${t}</h3><ul>${a.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:"";
+$("f").onsubmit=async e=>{e.preventDefault();$("out").innerHTML='<p class="mute">Checking...</p>';
+ const body={};["partner_id","sku","partner_inspected","photo_attached","submitted_at"].forEach(k=>{if($(k).value.trim())body[k]=$(k).value.trim()});
+ ["claim_amount_inr","days_since_purchase","customer_prior_claims"].forEach(k=>body[k]=Number($(k).value));
+ try{const r=await fetch("/predict",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});const d=await r.json();
+  if(!r.ok){const m=d.detail?(typeof d.detail==="string"?d.detail:d.detail.map(x=>x.loc.slice(-1)+": "+x.msg).join("; ")):(d.error||"Something went wrong");$("out").innerHTML=`<p class="err"><b>Could not check:</b> ${esc(m)}</p>`;return}
+  const lab={high:"Hold for review",medium:"Watch",low:"Pay normally"}[d.risk];
+  $("out").innerHTML=`<span class="pill ${d.risk}">${lab}</span><div class="big">${(d.score*100).toFixed(1)}%</div><div class="mute">estimated chance this claim is fraud</div><p>${esc(d.action)}</p>
+  ${list("Why it looks risky",d.why_risky)}${list("Why it looks fine",d.why_reassuring)}
+  <p class="mute">If paid and fraudulent we would expect to lose about Rs ${d.money.expected_fraud_loss_if_paid_inr.toLocaleString("en-IN")}. Holding a genuine claim costs about Rs ${d.money.cost_if_held_and_genuine_inr} in goodwill.</p><p class="mute">${esc(d.note)}</p>`;
+ }catch(err){$("out").innerHTML='<p class="err">Could not reach the service. Is it running?</p>'}};
+</script></main></body></html>
